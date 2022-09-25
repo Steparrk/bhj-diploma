@@ -14,7 +14,12 @@ class AccountsWidget {
    * необходимо выкинуть ошибку.
    * */
   constructor( element ) {
-
+    if (!element) {
+      throw new Error('element is not exist');
+    }
+    this.element = element;
+    this.registerEvents();
+    this.update();
   }
 
   /**
@@ -25,7 +30,16 @@ class AccountsWidget {
    * вызывает AccountsWidget.onSelectAccount()
    * */
   registerEvents() {
-
+    this.element.querySelector('.create-account').onclick = e => {
+      App.getModal('createAccount').open();
+    }
+    this.menuItem = Array.from(this.element.querySelectorAll('.account'));
+    this.menuItem.forEach(item => 
+      item.addEventListener('click', e => {
+        e.preventDefault();
+        this.onSelectAccount(item);
+      })
+      )
   }
 
   /**
@@ -39,7 +53,17 @@ class AccountsWidget {
    * метода renderItem()
    * */
   update() {
-
+    if(User.current()) {
+      Account.list(User.current(), (err, response) => {
+        if(response && response.success) {
+          this.clear();
+          this.renderItem(response.data);
+          this.registerEvents();
+        }else{
+          console.log(err)
+        }
+      })
+    }
   }
 
   /**
@@ -48,7 +72,7 @@ class AccountsWidget {
    * в боковой колонке
    * */
   clear() {
-
+    this.menuItem.forEach(item => item.remove());
   }
 
   /**
@@ -59,7 +83,17 @@ class AccountsWidget {
    * Вызывает App.showPage( 'transactions', { account_id: id_счёта });
    * */
   onSelectAccount( element ) {
+    this.menuItem.forEach(item => {
+      if(item.classList.contains('active')) { 
+        item.classList.remove('active')  
+      }
+    })
 
+    element.classList.add('active');
+    
+    App.showPage('transactions', {
+      account_id: element.dataset.id
+    });
   }
 
   /**
@@ -68,7 +102,22 @@ class AccountsWidget {
    * item - объект с данными о счёте
    * */
   getAccountHTML(item){
+    const activeAccountConteiner = document.createElement('li');
+    activeAccountConteiner.className = 'account';
+    activeAccountConteiner.dataset.id = item.id;
+    this.element.append(activeAccountConteiner);
 
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', '#');
+    this.element.lastChild.append(linkElement);
+
+    const spanElement = document.createElement('span');
+    spanElement.textContent = item.name + ' / ';
+    this.element.lastChild.querySelector('a').append(spanElement);
+
+    const spanSumElement = document.createElement('span');
+    spanSumElement.textContent = item.sum + ' Р';
+    this.element.lastChild.querySelector('a').append(spanSumElement);
   }
 
   /**
@@ -78,6 +127,6 @@ class AccountsWidget {
    * и добавляет его внутрь элемента виджета
    * */
   renderItem(data){
-
+    data.forEach(item => this.getAccountHTML(item))
   }
 }

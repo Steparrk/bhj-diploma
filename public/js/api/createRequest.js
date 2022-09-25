@@ -13,12 +13,12 @@ const createRequest = (options = {}) => {
             url += '?' + Object.entries(options.data).map(e => e.map(encodeURIComponent).join('=')).join('&');
         }else{
             formData = new FormData();
-            Object.entries(options.data).forEach(el => formData(...el));
+            Object.entries(options.data).forEach(el => formData.append(...el));
         }
     }
 
     xhr.onerror = () => {
-
+        alert(`Ошибка соединения`);
     };
 
     if(options.callback){
