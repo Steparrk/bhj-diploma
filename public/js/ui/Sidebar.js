@@ -22,11 +22,7 @@ class Sidebar {
     document.querySelector(".sidebar-toggle").addEventListener('click', () => {
       let sideBar = document.querySelector(".sidebar-mini");
 
-      if(sideBar.classList.contains('sidebar-open', 'sidebar-collapse')){
-        sideBar.classList.remove('sidebar-open', 'sidebar-collapse');
-        return;
-      }
-      sideBar.classList.add('sidebar-open', 'sidebar-collapse');
+      sideBar.classList.toggle('sidebar-open');
     });
   }
 
@@ -51,6 +47,8 @@ class Sidebar {
       User.logout((err, response) => {
         if(response && response.success) {
           App.setState("init");
+        }else{
+          console.log(err)
         }
       });
     }

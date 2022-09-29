@@ -3,7 +3,7 @@
  * отображения счетов в боковой колонке
  * */
 
-class AccountsWidget {
+ class AccountsWidget {
   /**
    * Устанавливает текущий элемент в свойство element
    * Регистрирует обработчики событий с помощью
@@ -35,8 +35,11 @@ class AccountsWidget {
     }
     this.menuItem = Array.from(this.element.querySelectorAll('.account'));
     this.menuItem.forEach(item => 
-      item.addEventListener('click', e => {
+      this.element.addEventListener('click', e => {
         e.preventDefault();
+        if(item !== e.target.closest('.account')) {
+          return;
+        }
         this.onSelectAccount(item);
       })
       )

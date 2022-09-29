@@ -38,10 +38,16 @@ class TransactionsPage {
       this.removeAccount();
       return;
     };
-    Array.from(this.element.querySelectorAll('.transaction__remove')).forEach(el => el.addEventListener('click', e => {
-      e.preventDefault();
-      this.removeTransaction(el.dataset.id);
-    }));
+      this.element.addEventListener('click', e => {
+        e.preventDefault();
+        this.removeElementList = Array.from(this.element.querySelectorAll('.transaction__remove'));
+        this.removeElementList.forEach(el => {
+          if(el !== e.target.closest('.transaction__remove')) {
+            return;
+          }
+          this.removeTransaction(el.dataset.id);
+        });
+      });
   }
 
   /**
@@ -111,7 +117,6 @@ class TransactionsPage {
           Transaction.list(options, (err, response) => {
             if(response.success) {
               this.renderTransactions(response.data);
-              this.registerEvents();
             }else{
               console.log(err)
             }
@@ -193,15 +198,15 @@ class TransactionsPage {
    * Отрисовывает список транзакций на странице
    * используя getTransactionHTML
    * */
-  renderTransactions(data){
+   renderTransactions(data){
     const content = this.element.querySelector('.content');
-    content.innerHTML = '';
-    if (!data.length) {
+    content.innerHTML = ''
+    if (!data) {
       return;
     }
-
-    data.forEach((item) => {
-      content.innerHTML += this.getTransactionHTML(item);
-    });
+    content.innerHTML = data.reduce((acc, item) => {
+      let el = this.getTransactionHTML(item);
+      return acc + el;
+    }, "");
   }
 }

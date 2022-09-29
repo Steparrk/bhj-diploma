@@ -26,14 +26,10 @@ const createRequest = (options = {}) => {
             let err = null;
             let response = null;
 
-            try{
-                if(xhr.response?.success){
-                    response = xhr.response;
-                }else{
-                    err = xhr.response;
-                }
-            }catch(e){
-                err = e;
+            if(xhr.response?.success){
+                response = xhr.response;
+            }else{
+                err = xhr.response;
             }
             options.callback(err, response);
         }
